@@ -51,7 +51,7 @@ export const HistoryPage = () => {
     });
   };
 
-  const calculateDuration = (entry: HistoryEntry) => {
+  const calculateDuration = (entry: TransformationHistoryEntry) => {
     const start = entry.startedAt.toDate();
     const end = entry.endsAt.toDate();
     const durationMs = end.getTime() - start.getTime();

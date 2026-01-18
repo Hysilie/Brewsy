@@ -21,7 +21,6 @@ import type {
   Run,
   HistoryEntry,
   TransformationHistoryEntry,
-  SaleHistoryEntry,
 } from '../types';
 
 // Configuration

@@ -11,7 +11,6 @@ import {
   addHistoryEntry
 } from '../../services/firestore';
 import {
-  calculateEffectiveDuration,
   isTransformationReady,
   calculateTimeRemaining,
   formatDuration

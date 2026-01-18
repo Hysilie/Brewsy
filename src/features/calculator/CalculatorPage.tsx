@@ -124,7 +124,7 @@ export const CalculatorPage = () => {
       <Card>
         <CardContent className="p-4">
           <h2 className="font-semibold text-dark-800 dark:text-dark-100 mb-3">
-            Pour {numberOfRuns} transformation{numberOfRuns > 1 ? 's' : ''}
+            Pour {runsNumber} transformation{runsNumber > 1 ? 's' : ''}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {/* Matériaux */}
