@@ -1,0 +1,100 @@
+{
+  "instructions": "Copiez ces données dans Firestore via la console Firebase",
+  "collections": {
+    "configs": {
+      "default": {
+        "name": "default",
+        "rules": {
+          "timeReductionHours": 1
+        },
+        "updatedAt": "SERVER_TIMESTAMP",
+        "subcollections": {
+          "transformations": {
+            "zeed": {
+              "id": "zeed",
+              "name": "Zeed",
+              "input": {
+                "materialName": "Feuille",
+                "quantity": 60
+              },
+              "tool": {
+                "name": "Pot de terre",
+                "price": 0
+              },
+              "durationHours": 48,
+              "crate": {
+                "name": "Caisse de Zeed",
+                "quantityPerCrate": 20
+              }
+            },
+            "pandoxine": {
+              "id": "pandoxine",
+              "name": "Pandoxine",
+              "input": {
+                "materialName": "Viande",
+                "quantity": 18
+              },
+              "tool": {
+                "name": "Marmite",
+                "price": 0
+              },
+              "durationHours": 96,
+              "crate": {
+                "name": "Caisse de Pandoxine",
+                "quantityPerCrate": 12
+              }
+            },
+            "krakenine": {
+              "id": "krakenine",
+              "name": "Krakenine",
+              "input": {
+                "materialName": "Huile",
+                "quantity": 10
+              },
+              "tool": {
+                "name": "Bidon de chauffe",
+                "price": 0
+              },
+              "durationHours": 24,
+              "crate": {
+                "name": "Caisse de Krakenine",
+                "quantityPerCrate": 12
+              }
+            },
+            "psylocybine": {
+              "id": "psylocybine",
+              "name": "Psylocybine",
+              "input": {
+                "materialName": "Champignon",
+                "quantity": 60
+              },
+              "tool": {
+                "name": "Sachet de fermentation",
+                "price": 0
+              },
+              "durationHours": 72,
+              "crate": {
+                "name": "Caisse de Psylocybine",
+                "quantityPerCrate": 20
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "notes": [
+    "1. Dans Firebase Console, allez dans Firestore Database",
+    "2. Créez la collection 'configs'",
+    "3. Créez le document 'default' avec les champs name et rules",
+    "4. Dans le document 'default', créez la sous-collection 'transformations'",
+    "5. Ajoutez les 4 documents de transformation (zeed, pandoxine, krakenine, psylocybine)",
+    "6. N'oubliez pas de créer un utilisateur dans Authentication (email/password)",
+    "",
+    "IMPORTANT:",
+    "- Les 4 types de caisses sont FIXES (Zeed, Pandoxine, Krakenine, Psylocybine)",
+    "- Ils correspondent aux 4 transformations possibles",
+    "- Prix des outils = 0 (les prix varient, donc on ne les stocke pas dans la config)",
+    "- Le rendement est VARIABLE (pas de calcul fixe de quantité produite)"
+  ]
+}
