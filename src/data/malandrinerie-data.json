@@ -1,0 +1,343 @@
+{
+  "description": "Données d'initialisation pour l'espace Malandrinerie dans Firestore",
+  "spaces": {
+    "malandrinerie": {
+      "materials": [
+        { "id": "plastiques", "name": "Plastiques", "unit": "unité" },
+        { "id": "rubans", "name": "Rubans", "unit": "unité" },
+        { "id": "dentiers", "name": "Dentiers", "unit": "unité" },
+        { "id": "pantheres", "name": "Panthères", "unit": "unité" },
+        { "id": "tubes", "name": "Tubes", "unit": "unité" },
+        { "id": "sacs", "name": "Sacs", "unit": "unité" },
+        { "id": "bracelets", "name": "Bracelets", "unit": "unité" },
+        { "id": "consoles", "name": "Consoles", "unit": "unité" },
+        { "id": "smartphones", "name": "Smartphones", "unit": "unité" },
+        { "id": "bons", "name": "Bons d'achats", "unit": "unité" },
+        { "id": "dentifrices", "name": "Dentifrices", "unit": "unité" },
+        { "id": "cigarettes", "name": "Cigarettes", "unit": "unité" },
+        { "id": "plexiglas", "name": "Plexiglas", "unit": "unité" },
+        { "id": "lentilles", "name": "Lentilles", "unit": "unité" },
+        { "id": "batteries", "name": "Batteries", "unit": "unité" },
+        { "id": "flashs", "name": "Flashs", "unit": "unité" },
+        { "id": "circuits", "name": "Circuits", "unit": "unité" },
+        { "id": "ecrous", "name": "Écrous", "unit": "unité" },
+        { "id": "vis", "name": "Vis", "unit": "unité" },
+        { "id": "fils", "name": "Fils", "unit": "unité" },
+        { "id": "aluminium", "name": "Aluminium", "unit": "unité" },
+        { "id": "viandes", "name": "Viandes", "unit": "unité" },
+        { "id": "abats", "name": "Abats", "unit": "unité" },
+        { "id": "langues", "name": "Langues", "unit": "unité" },
+        { "id": "rognons", "name": "Rognons", "unit": "unité" },
+        { "id": "jerricans", "name": "Jerricans", "unit": "unité" },
+        { "id": "briquets", "name": "Briquets", "unit": "unité" },
+        { "id": "bonbonnes", "name": "Bonbonnes", "unit": "unité" },
+        { "id": "additifs", "name": "Additifs", "unit": "unité" },
+        { "id": "gels", "name": "Gels", "unit": "unité" },
+        { "id": "accelerometres", "name": "Accéléromètres", "unit": "unité" }
+      ],
+      "recipes": [
+        {
+          "id": "couteau",
+          "name": "Couteau",
+          "emoji": "🔪",
+          "category": "T1",
+          "batchSize": 1,
+          "unitPrice": 1000,
+          "materials": {
+            "plastiques": 6,
+            "rubans": 6,
+            "dentiers": 6,
+            "pantheres": 2
+          }
+        },
+        {
+          "id": "zips",
+          "name": "Zips",
+          "emoji": "🧷",
+          "category": "T1",
+          "batchSize": 12,
+          "unitPrice": 250,
+          "materials": {
+            "tubes": 2,
+            "plastiques": 6,
+            "sacs": 4,
+            "bracelets": 4
+          }
+        },
+        {
+          "id": "kits_crochetage_miteux",
+          "name": "Kits de crochetage miteux",
+          "emoji": "🧶",
+          "category": "T1",
+          "batchSize": 16,
+          "unitPrice": 250,
+          "materials": {
+            "consoles": 2,
+            "tubes": 4,
+            "plastiques": 4,
+            "rubans": 6
+          }
+        },
+        {
+          "id": "faux_tickets_parking",
+          "name": "Faux tickets de parking",
+          "emoji": "🅿️",
+          "category": "T1",
+          "batchSize": 4,
+          "unitPrice": 0,
+          "materials": {
+            "smartphones": 3,
+            "bons": 10,
+            "rubans": 2,
+            "consoles": 5
+          }
+        },
+        {
+          "id": "paquet_cigarette_era",
+          "name": "Paquet de cigarette Era",
+          "emoji": "🚬",
+          "category": "T1",
+          "batchSize": 5,
+          "unitPrice": 0,
+          "materials": {
+            "dentifrices": 2,
+            "cigarettes": 10,
+            "bons": 2,
+            "consoles": 2
+          }
+        },
+        {
+          "id": "tenue_stagiaire_pole_emploi",
+          "name": "Tenue de stagiaire Pôle Emploi",
+          "emoji": "👔",
+          "category": "T1",
+          "batchSize": 4,
+          "unitPrice": 1000,
+          "materials": {
+            "bons": 6,
+            "consoles": 4,
+            "cigarettes": 2,
+            "rubans": 2,
+            "bracelets": 3,
+            "smartphones": 3
+          }
+        },
+        {
+          "id": "antistress_artisanal",
+          "name": "Antistress artisanal",
+          "emoji": "🧸",
+          "category": "T1",
+          "batchSize": 6,
+          "unitPrice": 400,
+          "materials": {
+            "dentiers": 2,
+            "sacs": 2,
+            "cigarettes": 6,
+            "dentifrices": 6
+          }
+        },
+        {
+          "id": "9x19_ap",
+          "name": "9x19 AP",
+          "emoji": "🔫",
+          "category": "T1",
+          "batchSize": 6,
+          "unitPrice": 450,
+          "materials": {
+            "pantheres": 4,
+            "bracelets": 4,
+            "sacs": 2,
+            "dentiers": 6
+          }
+        },
+        {
+          "id": "pistolet",
+          "name": "Pistolet",
+          "emoji": "🔫",
+          "category": "T1",
+          "batchSize": 1,
+          "unitPrice": 3500,
+          "materials": {
+            "pantheres": 6,
+            "dentifrices": 6,
+            "tubes": 10,
+            "plastiques": 8,
+            "sacs": 10
+          }
+        },
+        {
+          "id": "gilet_pare_balles_miteux",
+          "name": "Gilet pare-balles miteux",
+          "emoji": "🦺",
+          "category": "T2",
+          "batchSize": 1,
+          "unitPrice": 0,
+          "materials": {
+            "plexiglas": 11,
+            "rubans": 6,
+            "bracelets": 6,
+            "sacs": 3
+          }
+        },
+        {
+          "id": "tenue_stagiaire_entreprise",
+          "name": "Tenue de stagiaire d'entreprise",
+          "emoji": "👔",
+          "category": "T2",
+          "batchSize": 4,
+          "unitPrice": 2000,
+          "materials": {
+            "lentilles": 5,
+            "batteries": 5,
+            "flashs": 6,
+            "circuits": 3,
+            "bons": 8,
+            "cigarettes": 5
+          }
+        },
+        {
+          "id": "kits_crochetage_avance",
+          "name": "Kits de crochetage avancé",
+          "emoji": "🧶",
+          "category": "T2",
+          "batchSize": 16,
+          "unitPrice": 700,
+          "materials": {
+            "ecrous": 5,
+            "vis": 5,
+            "fils": 4,
+            "circuits": 4,
+            "dentiers": 4
+          }
+        },
+        {
+          "id": "mre_peach",
+          "name": "MRE Peach / Z ERA",
+          "emoji": "🍱",
+          "category": "T2",
+          "batchSize": 6,
+          "unitPrice": 750,
+          "materials": {
+            "aluminium": 6,
+            "viandes": 6,
+            "abats": 5,
+            "langues": 3,
+            "rognons": 3
+          }
+        },
+        {
+          "id": "bidons_artisanaux",
+          "name": "Bidons artisanaux",
+          "emoji": "🛢️",
+          "category": "T2",
+          "batchSize": 1,
+          "unitPrice": 10,
+          "materials": {
+            "plexiglas": 3,
+            "vis": 3,
+            "jerricans": 6,
+            "briquets": 6,
+            "bonbonnes": 4
+          }
+        },
+        {
+          "id": "baume_anti_stress",
+          "name": "Baume anti-stress",
+          "emoji": "💊",
+          "category": "T2",
+          "batchSize": 4,
+          "unitPrice": 1000,
+          "materials": {
+            "plexiglas": 4,
+            "additifs": 6,
+            "cigarettes": 4,
+            "dentifrices": 8
+          }
+        },
+        {
+          "id": "pistolet_combat",
+          "name": "Pistolet de combat",
+          "emoji": "🔫",
+          "category": "T2",
+          "batchSize": 1,
+          "unitPrice": 6000,
+          "materials": {
+            "pistolet": 1,
+            "vis": 3,
+            "lentilles": 8,
+            "flashs": 11,
+            "pantheres": 3
+          },
+          "requiresCraft": ["pistolet"]
+        },
+        {
+          "id": "pistolet_lance",
+          "name": "Pistolet lance-...",
+          "emoji": "🔫",
+          "category": "T2",
+          "batchSize": 1,
+          "unitPrice": 5000,
+          "materials": {
+            "gels": 3,
+            "accelerometres": 6
+          }
+        },
+        {
+          "id": "fusees_eclairantes",
+          "name": "Fusées éclairantes",
+          "emoji": "🚀",
+          "category": "T2",
+          "batchSize": 20,
+          "unitPrice": 750,
+          "materials": {
+            "additifs": 5,
+            "bonbonnes": 6,
+            "briquets": 6,
+            "plexiglas": 3,
+            "flashs": 3
+          }
+        },
+        {
+          "id": "cocktail_molotov",
+          "name": "Cocktail Molotov",
+          "emoji": "🔥",
+          "category": "T2",
+          "batchSize": 2,
+          "unitPrice": 5000,
+          "materials": {
+            "jerricans": 9,
+            "additifs": 11,
+            "briquets": 8,
+            "gels": 6,
+            "fils": 5,
+            "batteries": 8
+          }
+        },
+        {
+          "id": "tec9",
+          "name": "Tec-9",
+          "emoji": "🔫",
+          "category": "T2",
+          "batchSize": 1,
+          "unitPrice": 10000,
+          "materials": {
+            "gels": 13,
+            "ecrous": 8,
+            "vis": 3,
+            "lentilles": 9,
+            "accelerometres": 12
+          }
+        }
+      ],
+      "groups": [
+        { "id": "glory", "name": "Glory" },
+        { "id": "b2mc", "name": "B2MC" },
+        { "id": "ob", "name": "OB" },
+        { "id": "g7", "name": "G7" },
+        { "id": "mrg", "name": "MRG" },
+        { "id": "88", "name": "88" },
+        { "id": "individual", "name": "Individuel" }
+      ]
+    }
+  }
+}

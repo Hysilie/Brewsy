@@ -18,6 +18,7 @@ import {
 import { Card, CardContent } from '../../ui/Card';
 import { Button } from '../../ui/Button';
 import { Select } from '../../ui/Select';
+import { Modal } from '../../ui/Modal';
 import type { Transformation, Run, Config } from '../../types';
 
 export const TimersPage = () => {
@@ -30,6 +31,12 @@ export const TimersPage = () => {
   // Form state
   const [selectedTransformationId, setSelectedTransformationId] = useState('');
   const [inputQuantity, setInputQuantity] = useState<string>('1');
+  const [customStartDate, setCustomStartDate] = useState<string>('');
+  const [customStartTime, setCustomStartTime] = useState<string>('');
+
+  // Cancel modal state
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [runToCancel, setRunToCancel] = useState<string | null>(null);
 
   // Real-time timer update
   const [, setCurrentTime] = useState(Date.now());
@@ -73,15 +80,26 @@ export const TimersPage = () => {
     const transformation = transformations.find(t => t.id === selectedTransformationId);
     if (!transformation) return;
 
+    // Parse custom start date/time if provided
+    let startDate: Date | undefined;
+    if (customStartDate && customStartTime) {
+      startDate = new Date(`${customStartDate}T${customStartTime}`);
+    } else if (customStartDate) {
+      startDate = new Date(customStartDate);
+    }
+
     await createRun(
       user.uid,
       selectedTransformationId,
       parseInt(inputQuantity) || 1,
-      transformation.durationHours
+      transformation.durationHours,
+      startDate
     );
 
     // Reset form
     setInputQuantity('1');
+    setCustomStartDate('');
+    setCustomStartTime('');
     setShowAddForm(false);
   };
 
@@ -106,6 +124,18 @@ export const TimersPage = () => {
   const handleDeleteRun = async (runId: string) => {
     if (!user) return;
     await deleteRun(user.uid, runId);
+  };
+
+  const handleCancelRun = (runId: string) => {
+    setRunToCancel(runId);
+    setShowCancelModal(true);
+  };
+
+  const confirmCancelRun = async () => {
+    if (!user || !runToCancel) return;
+    await deleteRun(user.uid, runToCancel);
+    setShowCancelModal(false);
+    setRunToCancel(null);
   };
 
   const getRunTransformation = (run: Run) => {
@@ -154,7 +184,39 @@ export const TimersPage = () => {
                   className="w-full px-3 py-2 rounded-input border border-border bg-card text-text shadow-sm focus:outline-none focus:ring-2 focus:ring-peach/30 focus:border-peach transition-all"
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  📅 Date de début (optionnel)
+                </label>
+                <input
+                  type="date"
+                  value={customStartDate}
+                  onChange={(e) => setCustomStartDate(e.target.value)}
+                  className="w-full px-4 py-2 rounded-input border border-border bg-card text-text shadow-sm focus:outline-none focus:ring-2 focus:ring-lavender/30 focus:border-lavender transition-all hover:border-lavender/50"
+                  style={{ colorScheme: 'light dark' }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  🕐 Heure de début (optionnel)
+                </label>
+                <input
+                  type="time"
+                  value={customStartTime}
+                  onChange={(e) => setCustomStartTime(e.target.value)}
+                  className="w-full px-4 py-2 rounded-input border border-border bg-card text-text shadow-sm focus:outline-none focus:ring-2 focus:ring-lavender/30 focus:border-lavender transition-all hover:border-lavender/50"
+                  style={{ colorScheme: 'light dark' }}
+                />
+              </div>
             </div>
+
+            {customStartDate && (
+              <div className="mb-3 p-2 bg-lavender-light rounded-soft text-xs text-text-muted">
+                ℹ️ Si vide, démarre maintenant. Sinon, démarre le {customStartDate} {customStartTime && `à ${customStartTime}`}
+              </div>
+            )}
 
             <Button onClick={handleCreateRun} className="w-full">
               🚀 Démarrer
@@ -246,9 +308,10 @@ export const TimersPage = () => {
                       <Button
                         variant="danger"
                         size="sm"
-                        onClick={() => run.id && handleDeleteRun(run.id)}
+                        onClick={() => run.id && handleCancelRun(run.id)}
+                        title="Annuler la production"
                       >
-                        ✕
+                        Annuler
                       </Button>
                     </div>
                   </div>
@@ -317,6 +380,33 @@ export const TimersPage = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Cancel Modal */}
+      <Modal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        title="Annuler la production"
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setShowCancelModal(false)}
+            >
+              Non, garder
+            </Button>
+            <Button
+              variant="danger"
+              onClick={confirmCancelRun}
+            >
+              Oui, annuler
+            </Button>
+          </>
+        }
+      >
+        <p className="text-text-secondary">
+          Êtes-vous sûr de vouloir annuler cette production ? Cette action est irréversible.
+        </p>
+      </Modal>
     </div>
   );
 };

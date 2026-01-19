@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../app/AuthContext";
+import { useSpace } from "../../app/SpaceContext";
 import {
   subscribeToStocks,
   subscribeToPrices,
@@ -21,6 +22,7 @@ import { getTransformations } from "../../services/firestore";
 
 export const DashboardPage = () => {
   const { user } = useAuth();
+  const { currentSpace } = useSpace();
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [prices, setPrices] = useState<Price[]>([]);
   const [runs, setRuns] = useState<Run[]>([]);
@@ -106,24 +108,47 @@ export const DashboardPage = () => {
     return sum + sale.quantitySold;
   }, 0);
 
+  // Si on est dans l'espace Malandrinerie, afficher un message
+  if (currentSpace === 'malandrinerie') {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold text-text">Dashboard - Malandrinerie</h1>
+        <Card>
+          <CardContent className="p-8 text-center">
+            <div className="text-6xl mb-4">⚔️</div>
+            <h2 className="text-xl font-semibold text-text mb-2">
+              Espace Malandrinerie
+            </h2>
+            <p className="text-text-muted mb-4">
+              Cet espace est en cours de développement. Les fonctionnalités (Dashboard, Calculettes, Commandes) seront bientôt disponibles !
+            </p>
+            <div className="inline-block px-4 py-2 bg-peach-light rounded-soft text-peach-dark text-sm">
+              À venir prochainement
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
       {/* Header avec stats inline */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-text">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-text">Dashboard - Drogue</h1>
         <div className="flex items-center gap-3 text-sm">
           <div className="flex items-center gap-1.5">
             <span className="text-text-muted">Valeur:</span>
-            <span className="font-bold text-peach">{totalValue.toLocaleString()} $</span>
+            <span className="font-bold text-mint-dark">{totalValue.toLocaleString()} $</span>
           </div>
           <div className="w-px h-4 bg-border" />
           <div className="flex items-center gap-1.5">
             <span className="text-text-muted">Actives:</span>
-            <span className="font-semibold text-lavender">{activeRuns.length}</span>
+            <span className="font-semibold text-mint">{activeRuns.length}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-text-muted">Prêtes:</span>
-            <span className="font-semibold text-sage">{readyRuns.length}</span>
+            <span className="font-semibold text-mint-dark">{readyRuns.length}</span>
           </div>
         </div>
       </div>
@@ -131,12 +156,12 @@ export const DashboardPage = () => {
       {/* Alert transformations prêtes */}
       {readyRuns.length > 0 && (
         <div
-          className="bg-sage-light border border-sage rounded-soft px-3 py-2 cursor-pointer hover:bg-sage/30 transition-colors"
+          className="bg-mint-light border border-mint rounded-soft px-3 py-2 cursor-pointer hover:bg-mint/30 transition-colors"
           onClick={() => navigate("/timers")}
         >
           <div className="flex items-center gap-2">
             <span className="text-lg">✓</span>
-            <span className="text-sm font-semibold text-sage-dark">
+            <span className="text-sm font-semibold text-mint-dark">
               {readyRuns.length} transformation{readyRuns.length > 1 ? "s" : ""} prête{readyRuns.length > 1 ? "s" : ""} à récolter
             </span>
           </div>

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { signOut } from "../services/auth";
+import { useSpace } from "./SpaceContext";
 import {
   ChartBar,
   Package,
@@ -10,6 +11,10 @@ import {
   ClockCounterClockwise,
   SignOut,
   Cactus,
+  Leaf,
+  Knife,
+  Scroll,
+  ShoppingCart,
 } from "phosphor-react";
 
 interface LayoutProps {
@@ -18,12 +23,14 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
+  const { currentSpace, setCurrentSpace } = useSpace();
 
   const handleSignOut = async () => {
     await signOut();
   };
 
-  const navItems = [
+  // Navigation items by space
+  const navItemsDrogue = [
     { path: "/", label: "Dashboard", Icon: ChartBar },
     { path: "/stocks", label: "Stocks", Icon: Package },
     { path: "/prices", label: "Prix", Icon: CurrencyDollar },
@@ -31,6 +38,15 @@ export const Layout = ({ children }: LayoutProps) => {
     { path: "/timers", label: "Transformations", Icon: Timer },
     { path: "/history", label: "Historique", Icon: ClockCounterClockwise },
   ];
+
+  const navItemsMalandrinerie = [
+    { path: "/", label: "Dashboard", Icon: ChartBar },
+    { path: "/malandrinerie/stocks", label: "Stocks", Icon: Package },
+    { path: "/malandrinerie/recipes", label: "Recettes", Icon: Scroll },
+    { path: "/malandrinerie/orders", label: "Commandes", Icon: ShoppingCart },
+  ];
+
+  const navItems = currentSpace === 'naturopathie' ? navItemsDrogue : navItemsMalandrinerie;
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -41,9 +57,46 @@ export const Layout = ({ children }: LayoutProps) => {
       {/* Header */}
       <header className="bg-card sticky top-0 z-10 border-b border-border shadow-soft">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-peach flex gap-2 items-center">              <Cactus size={24} weight="duotone" />
- Brewsy </h1>
+          <h1 className="text-2xl font-bold text-peach flex gap-2 items-center">
+            <Cactus size={24} weight="duotone" />
+            Brewsy
+          </h1>
+
           <div className="flex items-center gap-3">
+            {/* Space Selector */}
+            <div className="flex items-center gap-2 bg-surface rounded-soft p-1 shadow-sm border border-border">
+              <button
+                onClick={() => setCurrentSpace("naturopathie")}
+                className={`flex items-center gap-2 px-3 py-2 rounded-soft transition-all ${
+                  currentSpace === "naturopathie"
+                    ? "bg-mint text-white font-semibold shadow-soft"
+                    : "text-text-muted hover:text-text hover:bg-card"
+                }`}
+                title="Espace Drogue"
+              >
+                <Leaf
+                  size={20}
+                  weight={currentSpace === "naturopathie" ? "fill" : "duotone"}
+                />
+                <span className="hidden sm:inline">Drogue</span>
+              </button>
+              <button
+                onClick={() => setCurrentSpace("malandrinerie")}
+                className={`flex items-center gap-2 px-3 py-2 rounded-soft transition-all ${
+                  currentSpace === "malandrinerie"
+                    ? "bg-peach text-white font-semibold shadow-soft"
+                    : "text-text-muted hover:text-text hover:bg-card"
+                }`}
+                title="Espace Malandrinerie"
+              >
+                <Knife
+                  size={20}
+                  weight={currentSpace === "malandrinerie" ? "fill" : "duotone"}
+                />
+                <span className="hidden sm:inline">Malandrinerie</span>
+              </button>
+            </div>
+
             {/* Logout */}
             <button
               onClick={handleSignOut}

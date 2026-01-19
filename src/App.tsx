@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './app/AuthContext';
+import { SpaceProvider } from './app/SpaceContext';
 import { LoginPage } from './features/auth/LoginPage';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import { Layout } from './app/Layout';
@@ -30,6 +31,11 @@ import { CalculatorPage } from './features/calculator/CalculatorPage';
 import { TimersPage } from './features/timers/TimersPage';
 import { HistoryPage } from './features/history/HistoryPage';
 import { SetupPage } from './features/setup/SetupPage';
+
+// Import Malandrinerie pages
+import { StocksMalandrPage } from './features/malandrinerie/StocksMalandrPage';
+import { RecipesMalandrPage } from './features/malandrinerie/RecipesMalandrPage';
+import { OrdersMalandrPage } from './features/malandrinerie/OrdersMalandrPage';
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -104,15 +110,41 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/malandrinerie/stocks"
+        element={
+          <ProtectedRoute>
+            <StocksMalandrPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/malandrinerie/recipes"
+        element={
+          <ProtectedRoute>
+            <RecipesMalandrPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/malandrinerie/orders"
+        element={
+          <ProtectedRoute>
+            <OrdersMalandrPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/Brewsy">
       <AuthProvider>
-        <AppRoutes />
+        <SpaceProvider>
+          <AppRoutes />
+        </SpaceProvider>
       </AuthProvider>
     </BrowserRouter>
   );

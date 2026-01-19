@@ -135,18 +135,20 @@ export const createRun = async (
   uid: string,
   transformationId: string,
   inputQuantityUsed: number,
-  durationHours: number
+  durationHours: number,
+  customStartDate?: Date
 ) => {
   const collectionRef = collection(db, 'users', uid, 'runs');
-  const now = Timestamp.now();
+  const startDate = customStartDate || new Date();
+  const startedAt = Timestamp.fromDate(startDate);
   const endsAt = Timestamp.fromMillis(
-    now.toMillis() + durationHours * 60 * 60 * 1000
+    startedAt.toMillis() + durationHours * 60 * 60 * 1000
   );
 
   const runData: Omit<Run, 'id'> = {
     transformationId,
     inputQuantityUsed,
-    startedAt: now,
+    startedAt,
     durationHours,
     reducedByAction: false,
     endsAt,
