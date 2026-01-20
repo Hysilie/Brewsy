@@ -5,7 +5,7 @@ type Option = {
   value: string;
   label: string;
   subtitle?: string;
-  icon?: React.ComponentType<{ size: number; weight: string; style?: React.CSSProperties }>;
+  icon?: React.ComponentType<any>;
 };
 
 type SearchSelectProps = {

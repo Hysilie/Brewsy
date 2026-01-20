@@ -239,7 +239,7 @@ export const OrdersMalandrPage = () => {
   const updateItemPrice = (index: number, newPrice: number) => {
     const updatedItems = [...orderItems];
     updatedItems[index].unitPrice = newPrice;
-    updatedItems[index].totalPrice = newPrice * updatedItems[index].actualProduction;
+    updatedItems[index].totalPrice = newPrice * (updatedItems[index].actualProduction || updatedItems[index].requestedQty);
     setOrderItems(updatedItems);
   };
 
