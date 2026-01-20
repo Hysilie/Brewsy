@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../app/AuthContext';
 import { subscribeToHistory, getTransformations } from '../../services/firestore';
@@ -154,7 +155,7 @@ export const HistoryPage = () => {
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-lavender-400 to-peach-400 flex items-center justify-center text-white text-sm">
+                                <div className="w-8 h-8 rounded-full bg-linear-to-br from-lavender-400 to-peach-400 flex items-center justify-center text-white text-sm">
                                   ⚗️
                                 </div>
                                 <h3 className="text-base font-semibold text-dark-800 dark:text-dark-100">
@@ -204,7 +205,7 @@ export const HistoryPage = () => {
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sage-400 to-peach-400 flex items-center justify-center text-white text-sm">
+                                <div className="w-8 h-8 rounded-full bg-linear-to-br from-sage-400 to-peach-400 flex items-center justify-center text-white text-sm">
                                   💰
                                 </div>
                                 <h3 className="text-base font-semibold text-dark-800 dark:text-dark-100">

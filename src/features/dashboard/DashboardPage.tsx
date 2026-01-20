@@ -114,8 +114,9 @@ export const DashboardPage = () => {
     return sum + sale.quantitySold;
   }, 0);
 
-  // Si on est dans l'espace Malandrinerie, afficher un message
-  if (currentSpace === 'malandrinerie') {
+  // This duplicate check is already handled at the top of the component
+  // Removing this to avoid TypeScript error
+  /*if (currentSpace === 'malandrinerie') {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-bold text-text">Dashboard - Malandrinerie</h1>
@@ -135,7 +136,7 @@ export const DashboardPage = () => {
         </Card>
       </div>
     );
-  }
+  }*/
 
   return (
     <div className="space-y-3">

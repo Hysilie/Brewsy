@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, getDocs, addDoc, deleteDoc, doc, serverTimestamp, orderBy, where } from 'firebase/firestore';
+import { collection, query, getDocs, addDoc, deleteDoc, doc, serverTimestamp, orderBy } from 'firebase/firestore';
 import { db, auth } from '../../services/firebase';
 import { Swap, Check, CurrencyDollar, TrendUp, ClockCounterClockwise, Sparkle, Trash } from 'phosphor-react';
 
@@ -140,10 +140,6 @@ export const LaundryMalandrPage = () => {
       </div>
     );
   }
-
-  const previewClean = dirtyAmount && parseFloat(dirtyAmount) > 0
-    ? calculateClean(parseFloat(dirtyAmount), percentage)
-    : 0;
 
   return (
     <div className="space-y-4">

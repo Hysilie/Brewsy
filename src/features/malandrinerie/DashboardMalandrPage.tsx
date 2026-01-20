@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
-import { collection, query, getDocs, where, orderBy, limit } from 'firebase/firestore';
+import { collection, query, getDocs, orderBy } from 'firebase/firestore';
 import { db, auth } from '../../services/firebase';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -7,7 +8,6 @@ import {
   Coins,
   ShoppingCart,
   Package,
-  TrendUp,
   Knife,
   Pill,
   Backpack,
@@ -19,7 +19,6 @@ import {
   Pizza,
   ArrowRight,
   Swap,
-  Sparkle,
 } from 'phosphor-react';
 
 type OrderItem = {
@@ -46,14 +45,14 @@ type Order = {
   status: 'pending' | 'completed';
 };
 
-type MaterialStock = {
-  id: string;
-  materialId: string;
-  materialName: string;
-  quantity: number;
-  unit: string;
-  speciality?: string;
-};
+// type MaterialStock = {
+//   id: string;
+//   materialId: string;
+//   materialName: string;
+//   quantity: number;
+//   unit: string;
+//   speciality?: string;
+// };
 
 type LaundryEntry = {
   id: string;
@@ -87,7 +86,7 @@ const getRecipeIcon = (recipeName: string, category: string) => {
 export const DashboardMalandrPage = () => {
   const [pendingOrders, setPendingOrders] = useState<Order[]>([]);
   const [completedOrders, setCompletedOrders] = useState<Order[]>([]);
-  const [stocks, setStocks] = useState<MaterialStock[]>([]);
+  // const [stocks, setStocks] = useState<MaterialStock[]>([]);
   const [laundryHistory, setLaundryHistory] = useState<LaundryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -127,24 +126,23 @@ export const DashboardMalandrPage = () => {
       setCompletedOrders(completedData);
 
       // Load stocks
-      const stocksRef = collection(db, 'users', user.uid, 'materialStocks');
-      const stocksQuery = query(stocksRef);
-      const stocksSnapshot = await getDocs(stocksQuery);
-      const stocksData: MaterialStock[] = [];
-      stocksSnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.space === 'malandrinerie') {
-          stocksData.push({
-            id: doc.id,
-            materialId: data.materialId,
-            materialName: data.materialName,
-            quantity: data.quantity || 0,
-            unit: data.unit || 'unité',
-            speciality: data.speciality,
-          });
-        }
-      });
-      setStocks(stocksData);
+      // const stocksRef = collection(db, 'users', user.uid, 'materialStocks');
+      // const stocksQuery = query(stocksRef);
+      // const stocksSnapshot = await getDocs(stocksQuery);
+      // const stocksData: MaterialStock[] = [];
+      // stocksSnapshot.forEach((doc) => {
+      //   const data = doc.data();
+      //   if (data.space === 'malandrinerie') {
+      //     stocksData.push({
+      //       id: doc.id,
+      //       materialId: data.materialId,
+      //       materialName: data.materialName,
+      //       quantity: data.quantity || 0,
+      //       unit: data.unit || 'unité',
+      //       speciality: data.speciality,
+      //     });
+      //   }
+      // });
 
       // Load laundry history
       const laundryRef = collection(db, 'users', user.uid, 'laundryHistory');
@@ -164,10 +162,6 @@ export const DashboardMalandrPage = () => {
 
   const getTotalGains = () => {
     return completedOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-  };
-
-  const getLowStocks = () => {
-    return stocks.filter(s => s.quantity <= 5).length;
   };
 
   const getLaundryBalance = () => {
