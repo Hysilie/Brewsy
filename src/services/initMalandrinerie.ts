@@ -59,16 +59,22 @@ export const initializeMalandrinerie = async () => {
     console.log('📦 Initialisation des stocks utilisateur...');
     for (const material of materials) {
       const stockRef = doc(db, 'users', user.uid, 'materialStocks', material.id);
-      await setDoc(stockRef, {
+      const stockData: any = {
         materialId: material.id,
         materialName: material.name,
         space: 'malandrinerie',
         quantity: 0,
         unit: material.unit,
-        speciality: (material as any).speciality,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
-      });
+      };
+
+      // N'ajouter speciality que s'il existe
+      if ((material as any).speciality) {
+        stockData.speciality = (material as any).speciality;
+      }
+
+      await setDoc(stockRef, stockData);
     }
     console.log(`✅ ${materials.length} stocks initialisés`);
 
