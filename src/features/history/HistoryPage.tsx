@@ -10,6 +10,11 @@ export const HistoryPage = () => {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [transformations, setTransformations] = useState<Transformation[]>([]);
 
+  const loadTransformations = async () => {
+    const data = await getTransformations();
+    setTransformations(data);
+  };
+
   useEffect(() => {
     loadTransformations();
   }, []);
@@ -19,11 +24,6 @@ export const HistoryPage = () => {
     const unsubscribe = subscribeToHistory(user.uid, setHistory);
     return unsubscribe;
   }, [user]);
-
-  const loadTransformations = async () => {
-    const data = await getTransformations();
-    setTransformations(data);
-  };
 
   const getTransformation = (id: string) => {
     return transformations.find(t => t.id === id);
