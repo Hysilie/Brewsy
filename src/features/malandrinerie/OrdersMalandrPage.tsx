@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { collection, query, getDocs, addDoc, deleteDoc, doc, serverTimestamp, where, updateDoc } from 'firebase/firestore';
 import { db, auth } from '../../services/firebase';
 import { Button } from '../../ui/Button';
+import { SearchSelect } from '../../ui/SearchSelect';
 import { ShoppingCart, Plus, Trash, Check, Knife, Pill, Backpack, Coins, Briefcase, ShieldCheck, Package, TShirt, Target, Fire, Pizza, X } from 'phosphor-react';
 
 type Recipe = {
@@ -11,6 +12,7 @@ type Recipe = {
   category: string;
   batchSize: number;
   unitPrice: number;
+  materials: Record<string, number>;
 };
 
 type Group = {
@@ -18,17 +20,27 @@ type Group = {
   name: string;
 };
 
+type Material = {
+  id: string;
+  name: string;
+  unit: string;
+};
+
 type OrderItem = {
-  recipeId: string;
-  recipeName: string;
-  recipeCategory: string;
+  type: 'recipe' | 'material';
+  recipeId?: string;
+  recipeName?: string;
+  recipeCategory?: string;
+  materialId?: string;
+  materialName?: string;
   requestedQty: number;
-  batchSize: number;
-  craftsNeeded: number;
-  actualProduction: number;
-  surplus: number;
+  batchSize?: number;
+  craftsNeeded?: number;
+  actualProduction?: number;
+  surplus?: number;
   unitPrice: number;
   totalPrice: number;
+  materials?: { materialId: string; materialName: string; quantity: number }[];
 };
 
 type SavedOrder = {
@@ -79,15 +91,20 @@ const getRecipeIcon = (recipeName: string, category: string) => {
 export const OrdersMalandrPage = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
   const [savedOrders, setSavedOrders] = useState<SavedOrder[]>([]);
+  const [materialNames, setMaterialNames] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(true);
 
   // Current order being created
   const [selectedGroup, setSelectedGroup] = useState<string>('');
   const [personName, setPersonName] = useState<string>('');
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [itemType, setItemType] = useState<'recipe' | 'material'>('recipe');
   const [selectedRecipe, setSelectedRecipe] = useState<string>('');
+  const [selectedMaterial, setSelectedMaterial] = useState<string>('');
   const [requestedQty, setRequestedQty] = useState<string>('');
+  const [unitPrice, setUnitPrice] = useState<string>('');
 
   // Order details modal
   const [viewingOrder, setViewingOrder] = useState<SavedOrder | null>(null);
@@ -120,6 +137,20 @@ export const OrdersMalandrPage = () => {
       });
       setGroups(groupsData);
 
+      // Load materials
+      const materialsRef = collection(db, 'configs', 'default', 'spaces', 'malandrinerie', 'materials');
+      const materialsSnapshot = await getDocs(query(materialsRef));
+      const materialsData: Material[] = [];
+      const namesMap = new Map<string, string>();
+      materialsSnapshot.forEach((doc) => {
+        const data = doc.data();
+        materialsData.push({ id: doc.id, name: data.name, unit: data.unit } as Material);
+        namesMap.set(doc.id, data.name);
+      });
+      materialsData.sort((a, b) => a.name.localeCompare(b.name));
+      setMaterials(materialsData);
+      setMaterialNames(namesMap);
+
       // Load saved orders
       const ordersRef = collection(db, 'users', user.uid, 'orders');
       const ordersQuery = query(ordersRef, where('space', '==', 'malandrinerie'), where('status', '==', 'pending'));
@@ -138,32 +169,66 @@ export const OrdersMalandrPage = () => {
   };
 
   const addItemToOrder = () => {
-    if (!selectedRecipe || !requestedQty || parseInt(requestedQty) <= 0) return;
-
-    const recipe = recipes.find(r => r.id === selectedRecipe);
-    if (!recipe) return;
-
     const qty = parseInt(requestedQty);
-    const craftsNeeded = Math.ceil(qty / recipe.batchSize);
-    const actualProduction = craftsNeeded * recipe.batchSize;
-    const surplus = actualProduction - qty;
-    const totalPrice = actualProduction * recipe.unitPrice;
+    if (!qty || qty <= 0) return;
 
-    const newItem: OrderItem = {
-      recipeId: recipe.id,
-      recipeName: recipe.name,
-      recipeCategory: recipe.category,
-      requestedQty: qty,
-      batchSize: recipe.batchSize,
-      craftsNeeded,
-      actualProduction,
-      surplus,
-      unitPrice: recipe.unitPrice,
-      totalPrice,
-    };
+    if (itemType === 'recipe') {
+      if (!selectedRecipe) return;
+      const recipe = recipes.find(r => r.id === selectedRecipe);
+      if (!recipe) return;
 
-    setOrderItems([...orderItems, newItem]);
-    setSelectedRecipe('');
+      const craftsNeeded = Math.ceil(qty / recipe.batchSize);
+      const actualProduction = craftsNeeded * recipe.batchSize;
+      const surplus = actualProduction - qty;
+      const totalPrice = actualProduction * recipe.unitPrice;
+
+      // Calculate materials needed
+      const materials = Object.entries(recipe.materials).map(([materialId, qtyPerCraft]) => ({
+        materialId,
+        materialName: materialNames.get(materialId) || materialId,
+        quantity: qtyPerCraft * craftsNeeded,
+      }));
+
+      const newItem: OrderItem = {
+        type: 'recipe',
+        recipeId: recipe.id,
+        recipeName: recipe.name,
+        recipeCategory: recipe.category,
+        requestedQty: qty,
+        batchSize: recipe.batchSize,
+        craftsNeeded,
+        actualProduction,
+        surplus,
+        unitPrice: recipe.unitPrice,
+        totalPrice,
+        materials,
+      };
+
+      setOrderItems([...orderItems, newItem]);
+      setSelectedRecipe('');
+    } else {
+      // Material
+      if (!selectedMaterial) return;
+      const price = parseFloat(unitPrice);
+      if (!price || price <= 0) return;
+
+      const totalPrice = qty * price;
+      const matName = materialNames.get(selectedMaterial) || selectedMaterial;
+
+      const newItem: OrderItem = {
+        type: 'material',
+        materialId: selectedMaterial,
+        materialName: matName,
+        requestedQty: qty,
+        unitPrice: price,
+        totalPrice,
+      };
+
+      setOrderItems([...orderItems, newItem]);
+      setSelectedMaterial('');
+      setUnitPrice('');
+    }
+
     setRequestedQty('');
   };
 
@@ -331,71 +396,134 @@ export const OrdersMalandrPage = () => {
               )}
             </div>
 
-            {/* Add article - inline */}
-            <div className="flex gap-2 mb-3">
-              <select
-                value={selectedRecipe}
-                onChange={(e) => setSelectedRecipe(e.target.value)}
-                className="flex-1 px-3 py-1.5 rounded-soft text-sm transition-all"
-                style={{
-                  border: '1px solid #EADFD8',
-                  backgroundColor: '#FFFFFF',
-                  color: '#5C4A3A'
-                }}
-                onFocus={(e) => {
-                  e.target.style.border = '1px solid #F4A583';
-                  e.target.style.outline = 'none';
-                }}
-                onBlur={(e) => e.target.style.border = '1px solid #EADFD8'}
-              >
-                <option value="">Recette...</option>
-                {recipes.map(recipe => (
-                  <option key={recipe.id} value={recipe.id}>
-                    {recipe.name} {recipe.batchSize > 1 ? `(x${recipe.batchSize})` : ''}
-                  </option>
-                ))}
-              </select>
+            {/* Add article - improved */}
+            <div className="space-y-2 mb-3">
+              {/* Type selector */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setItemType('recipe')}
+                  className="flex-1 px-3 py-2 rounded-soft text-sm font-medium transition-all"
+                  style={{
+                    backgroundColor: itemType === 'recipe' ? '#D9EDD5' : '#FFFFFF',
+                    color: itemType === 'recipe' ? '#4A6B47' : '#A08876',
+                    border: itemType === 'recipe' ? '1px solid #6B9D66' : '1px solid #EADFD8',
+                  }}
+                >
+                  Recette
+                </button>
+                <button
+                  onClick={() => setItemType('material')}
+                  className="flex-1 px-3 py-2 rounded-soft text-sm font-medium transition-all"
+                  style={{
+                    backgroundColor: itemType === 'material' ? '#D9EDD5' : '#FFFFFF',
+                    color: itemType === 'material' ? '#4A6B47' : '#A08876',
+                    border: itemType === 'material' ? '1px solid #6B9D66' : '1px solid #EADFD8',
+                  }}
+                >
+                  Matériau
+                </button>
+              </div>
 
-              <input
-                type="number"
-                min="0"
-                placeholder="Qté"
-                value={requestedQty}
-                onChange={(e) => setRequestedQty(e.target.value)}
-                className="w-20 px-3 py-1.5 rounded-soft text-sm transition-all"
-                style={{
-                  border: '1px solid #EADFD8',
-                  backgroundColor: '#FFFFFF',
-                  color: '#5C4A3A'
-                }}
-                onFocus={(e) => {
-                  e.target.style.border = '1px solid #F4A583';
-                  e.target.style.outline = 'none';
-                }}
-                onBlur={(e) => e.target.style.border = '1px solid #EADFD8'}
-              />
+              {/* Item selector + quantity */}
+              <div className="flex gap-2">
+                {itemType === 'recipe' ? (
+                  <div className="flex-1">
+                    <SearchSelect
+                      options={recipes.map(r => ({
+                        value: r.id,
+                        label: r.name,
+                        subtitle: r.batchSize > 1 ? `x${r.batchSize} • ${r.unitPrice}$` : `${r.unitPrice}$`,
+                        icon: getRecipeIcon(r.name, r.category),
+                      }))}
+                      value={selectedRecipe}
+                      onChange={setSelectedRecipe}
+                      placeholder="Rechercher une recette..."
+                      emptyMessage="Aucune recette trouvée"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex-1">
+                    <SearchSelect
+                      options={materials.map(m => ({
+                        value: m.id,
+                        label: m.name,
+                        subtitle: m.unit,
+                      }))}
+                      value={selectedMaterial}
+                      onChange={setSelectedMaterial}
+                      placeholder="Rechercher un matériau..."
+                      emptyMessage="Aucun matériau trouvé"
+                    />
+                  </div>
+                )}
 
-              <button
-                onClick={addItemToOrder}
-                disabled={!selectedRecipe || !requestedQty}
-                className="px-3 py-1.5 rounded-soft text-sm font-medium transition-all disabled:opacity-30"
-                style={{
-                  backgroundColor: '#D9EDD5',
-                  color: '#6B9D66',
-                  border: '1px solid #C8E0C4'
-                }}
-                onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = '#C8E0C4')}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#D9EDD5'}
-              >
-                <Plus size={16} weight="bold" />
-              </button>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Qté"
+                  value={requestedQty}
+                  onChange={(e) => setRequestedQty(e.target.value)}
+                  className="w-20 px-3 py-2 rounded-soft text-sm transition-all"
+                  style={{
+                    border: '1px solid #EADFD8',
+                    backgroundColor: '#FFFFFF',
+                    color: '#5C4A3A'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.border = '1px solid #F4A583';
+                    e.target.style.outline = 'none';
+                  }}
+                  onBlur={(e) => e.target.style.border = '1px solid #EADFD8'}
+                />
+
+                {itemType === 'material' && (
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Prix/u"
+                    value={unitPrice}
+                    onChange={(e) => setUnitPrice(e.target.value)}
+                    className="w-24 px-3 py-2 rounded-soft text-sm transition-all"
+                    style={{
+                      border: '1px solid #EADFD8',
+                      backgroundColor: '#FFFFFF',
+                      color: '#5C4A3A'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.border = '1px solid #F4A583';
+                      e.target.style.outline = 'none';
+                    }}
+                    onBlur={(e) => e.target.style.border = '1px solid #EADFD8'}
+                  />
+                )}
+
+                <button
+                  onClick={addItemToOrder}
+                  disabled={
+                    !requestedQty ||
+                    (itemType === 'recipe' ? !selectedRecipe : (!selectedMaterial || !unitPrice))
+                  }
+                  className="px-3 py-2 rounded-soft text-sm font-medium transition-all disabled:opacity-30"
+                  style={{
+                    backgroundColor: '#D9EDD5',
+                    color: '#6B9D66',
+                    border: '1px solid #C8E0C4'
+                  }}
+                  onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = '#C8E0C4')}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#D9EDD5'}
+                >
+                  <Plus size={16} weight="bold" />
+                </button>
+              </div>
             </div>
 
             {/* Order items - compact list */}
             {orderItems.length > 0 && (
               <div className="space-y-2">
                 {orderItems.map((item, index) => {
-                  const Icon = getRecipeIcon(item.recipeName, item.recipeCategory);
+                  const Icon = item.type === 'recipe'
+                    ? getRecipeIcon(item.recipeName || '', item.recipeCategory || '')
+                    : Package;
 
                   return (
                     <div
@@ -410,12 +538,18 @@ export const OrdersMalandrPage = () => {
                         <Icon size={20} weight="duotone" style={{ color: '#F4A583', flexShrink: 0, marginTop: '2px' }} />
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm leading-tight" style={{ color: '#5C4A3A' }}>
-                            {item.recipeName}
+                            {item.type === 'recipe' ? item.recipeName : item.materialName}
                           </p>
                           <p className="text-xs leading-tight mt-0.5" style={{ color: '#A08876' }}>
-                            {item.requestedQty} demandés • {item.craftsNeeded} craft{item.craftsNeeded > 1 ? 's' : ''} • {item.actualProduction} produits
-                            {item.surplus > 0 && (
-                              <span style={{ color: '#D4846A' }}> (+{item.surplus} surplus)</span>
+                            {item.type === 'recipe' ? (
+                              <>
+                                {item.requestedQty} demandés • {item.craftsNeeded} craft{item.craftsNeeded! > 1 ? 's' : ''} • {item.actualProduction} produits
+                                {item.surplus! > 0 && (
+                                  <span style={{ color: '#D4846A' }}> (+{item.surplus} surplus)</span>
+                                )}
+                              </>
+                            ) : (
+                              `${item.requestedQty} unité${item.requestedQty > 1 ? 's' : ''}`
                             )}
                           </p>
                         </div>
@@ -627,7 +761,9 @@ export const OrdersMalandrPage = () => {
             {/* Items list */}
             <div className="p-4 space-y-3">
               {viewingOrder.items.map((item, index) => {
-                const Icon = getRecipeIcon(item.recipeName, item.recipeCategory);
+                const Icon = item.type === 'recipe'
+                  ? getRecipeIcon(item.recipeName || '', item.recipeCategory || '')
+                  : Package;
 
                 return (
                   <div
@@ -642,29 +778,47 @@ export const OrdersMalandrPage = () => {
                       <Icon size={24} weight="duotone" style={{ color: '#F4A583', flexShrink: 0, marginTop: '2px' }} />
                       <div className="flex-1">
                         <p className="font-semibold" style={{ color: '#5C4A3A' }}>
-                          {item.recipeName}
+                          {item.type === 'recipe' ? item.recipeName : item.materialName}
                         </p>
                         <p className="text-xs mt-1" style={{ color: '#A08876' }}>
-                          {item.requestedQty} demandés • {item.craftsNeeded} craft{item.craftsNeeded > 1 ? 's' : ''} • {item.actualProduction} produits
-                          {item.surplus > 0 && (
-                            <span style={{ color: '#D4846A' }}> (+{item.surplus} surplus)</span>
+                          {item.type === 'recipe' ? (
+                            `${item.requestedQty} demandé${item.requestedQty > 1 ? 's' : ''} • ${item.craftsNeeded} craft${item.craftsNeeded! > 1 ? 's' : ''}`
+                          ) : (
+                            `${item.requestedQty} unité${item.requestedQty > 1 ? 's' : ''}`
                           )}
                         </p>
                       </div>
                     </div>
 
+                    {/* Materials needed (for recipes only) */}
+                    {item.type === 'recipe' && item.materials && item.materials.length > 0 && (
+                      <div className="mb-2">
+                        <p className="text-xs font-semibold mb-1" style={{ color: '#A08876' }}>
+                          Matériaux nécessaires:
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {item.materials.map((mat, idx) => (
+                            <span
+                              key={idx}
+                              className="inline-block px-2 py-0.5 rounded-full text-xs"
+                              style={{
+                                backgroundColor: '#F5EFE7',
+                                color: '#8B7355'
+                              }}
+                            >
+                              {mat.quantity} {mat.materialName}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div
-                      className="flex items-center justify-between pt-2"
+                      className="flex items-center justify-end pt-2"
                       style={{ borderTop: '1px solid #EADFD8' }}
                     >
-                      <div className="text-xs" style={{ color: '#A08876' }}>
-                        <span>Prix unitaire: </span>
-                        <span className="font-semibold" style={{ color: '#5C4A3A' }}>
-                          {item.unitPrice}$
-                        </span>
-                      </div>
                       <div className="text-sm font-bold" style={{ color: '#5C4A3A' }}>
-                        Total: {item.totalPrice.toLocaleString()}$
+                        {item.totalPrice.toLocaleString()}$
                       </div>
                     </div>
                   </div>

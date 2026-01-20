@@ -240,11 +240,47 @@ export const RecipesMalandrPage = () => {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // Filter recipes by search query
-  const filteredRecipes = recipes.filter(recipe =>
-    recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    recipe.emoji.includes(searchQuery)
-  );
+  // Filter recipes by search query (name, emoji, category, or materials)
+  const filteredRecipes = recipes.filter(recipe => {
+    const query = searchQuery.toLowerCase().trim();
+
+    // Empty search = show all
+    if (!query) return true;
+
+    // Search in recipe name (case insensitive)
+    if (recipe.name.toLowerCase().includes(query)) return true;
+
+    // Search in emoji (case insensitive)
+    if (recipe.emoji.toLowerCase().includes(query)) return true;
+
+    // Search in category (case insensitive)
+    if (recipe.category && recipe.category.toLowerCase().includes(query)) return true;
+
+    // Search in materials (case insensitive)
+    const materialIds = Object.keys(recipe.materials || {});
+    for (const matId of materialIds) {
+      const matName = materialNames.get(matId) || '';
+      // Search by material name
+      if (matName && matName.toLowerCase().includes(query)) {
+        console.log('✅ Found match:', recipe.name, 'contains material:', matName);
+        return true;
+      }
+      // Search by material ID
+      if (matId && matId.toLowerCase().includes(query)) {
+        console.log('✅ Found match:', recipe.name, 'contains material ID:', matId);
+        return true;
+      }
+    }
+
+    return false;
+  });
+
+  // Debug: log search results
+  if (searchQuery) {
+    console.log('🔍 Search query:', searchQuery);
+    console.log('📦 Material names loaded:', materialNames.size);
+    console.log('📋 Filtered recipes:', filteredRecipes.length, '/', recipes.length);
+  }
 
   if (loading) {
     return (
@@ -286,7 +322,7 @@ export const RecipesMalandrPage = () => {
         />
         <input
           type="text"
-          placeholder="Rechercher une recette..."
+          placeholder="Rechercher par nom, catégorie ou matériau..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-10 pr-4 py-2 rounded-soft text-sm transition-all"

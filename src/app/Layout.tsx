@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signOut } from "../services/auth";
 import { useSpace } from "./SpaceContext";
 import {
@@ -23,10 +23,17 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { currentSpace, setCurrentSpace } = useSpace();
 
   const handleSignOut = async () => {
     await signOut();
+  };
+
+  const handleSpaceChange = (newSpace: "naturopathie" | "malandrinerie") => {
+    setCurrentSpace(newSpace);
+    // Redirect to dashboard when changing space
+    navigate("/");
   };
 
   // Navigation items by space
@@ -59,16 +66,16 @@ export const Layout = ({ children }: LayoutProps) => {
       {/* Header */}
       <header className="bg-card sticky top-0 z-10 border-b border-border shadow-soft">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-peach flex gap-2 items-center">
+          <Link to="/" className="text-2xl font-bold text-peach flex gap-2 items-center hover:text-peach-dark transition-colors">
             <Cactus size={24} weight="duotone" />
             Brewsy
-          </h1>
+          </Link>
 
           <div className="flex items-center gap-3">
             {/* Space Selector */}
             <div className="flex items-center gap-2 bg-surface rounded-soft p-1 shadow-sm border border-border">
               <button
-                onClick={() => setCurrentSpace("naturopathie")}
+                onClick={() => handleSpaceChange("naturopathie")}
                 className={`flex items-center gap-2 px-3 py-2 rounded-soft transition-all ${
                   currentSpace === "naturopathie"
                     ? "bg-mint text-white font-semibold shadow-soft"
@@ -83,7 +90,7 @@ export const Layout = ({ children }: LayoutProps) => {
                 <span className="hidden sm:inline">Drogue</span>
               </button>
               <button
-                onClick={() => setCurrentSpace("malandrinerie")}
+                onClick={() => handleSpaceChange("malandrinerie")}
                 className={`flex items-center gap-2 px-3 py-2 rounded-soft transition-all ${
                   currentSpace === "malandrinerie"
                     ? "bg-peach text-white font-semibold shadow-soft"

@@ -335,8 +335,7 @@
         { "id": "ob", "name": "OB" },
         { "id": "g7", "name": "G7" },
         { "id": "mrg", "name": "MRG" },
-        { "id": "88", "name": "88" },
-        { "id": "individual", "name": "Individuel" }
+        { "id": "88", "name": "88" }
       ]
     }
   }

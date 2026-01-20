@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, getDocs, where, orderBy } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db, auth } from '../../services/firebase';
 import { ClockCounterClockwise, ShoppingCart, Coins, Knife, Pill, Backpack, Briefcase, ShieldCheck, Package, TShirt, Target, Fire, Pizza } from 'phosphor-react';
 
@@ -75,21 +75,27 @@ export const HistoryMalandrPage = () => {
       const user = auth.currentUser;
       if (!user) return;
 
+      console.log('🔍 [HistoryMalandr] Loading completed orders (no index required)');
+
+      // Load all orders and filter in memory (avoid index requirement)
       const ordersRef = collection(db, 'users', user.uid, 'orders');
-      const ordersQuery = query(
-        ordersRef,
-        where('space', '==', 'malandrinerie'),
-        where('status', '==', 'completed'),
-        orderBy('completedAt', 'desc')
-      );
-      const ordersSnapshot = await getDocs(ordersQuery);
+      const ordersSnapshot = await getDocs(ordersRef);
       const ordersData: CompletedOrder[] = [];
+
       ordersSnapshot.forEach((docSnap) => {
-        ordersData.push({ id: docSnap.id, ...docSnap.data() } as CompletedOrder);
+        const data = docSnap.data();
+        if (data.space === 'malandrinerie' && data.status === 'completed') {
+          ordersData.push({ id: docSnap.id, ...data } as CompletedOrder);
+        }
       });
+
+      // Sort in memory by completedAt desc
+      ordersData.sort((a, b) => (b.completedAt?.toMillis() || 0) - (a.completedAt?.toMillis() || 0));
+
+      console.log('✅ [HistoryMalandr] Loaded', ordersData.length, 'completed orders');
       setCompletedOrders(ordersData);
     } catch (error) {
-      console.error('Error loading completed orders:', error);
+      console.error('❌ [HistoryMalandr] Error loading completed orders:', error);
     } finally {
       setLoading(false);
     }

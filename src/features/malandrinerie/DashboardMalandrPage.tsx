@@ -64,7 +64,9 @@ type LaundryEntry = {
 };
 
 // Icon mapping function
-const getRecipeIcon = (recipeName: string, category: string) => {
+const getRecipeIcon = (recipeName?: string, category?: string) => {
+  if (!recipeName) return Package;
+
   const name = recipeName.toLowerCase();
   if (name.includes('tenue de stagiaire')) return TShirt;
   if (name.includes('tec-9') || name.includes('pistolet')) return Target;
@@ -77,9 +79,14 @@ const getRecipeIcon = (recipeName: string, category: string) => {
   if (name.includes('argent') || name.includes('cash') || name.includes('billet')) return Coins;
   if (name.includes('sac') || name.includes('pochon')) return Backpack;
   if (name.includes('mallette') || name.includes('valise')) return Briefcase;
-  if (category.toLowerCase().includes('arme')) return Knife;
-  if (category.toLowerCase().includes('drogue')) return Pill;
-  if (category.toLowerCase().includes('argent')) return Coins;
+
+  if (category) {
+    const cat = category.toLowerCase();
+    if (cat.includes('arme')) return Knife;
+    if (cat.includes('drogue')) return Pill;
+    if (cat.includes('argent')) return Coins;
+  }
+
   return Package;
 };
 
