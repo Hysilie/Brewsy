@@ -44,6 +44,8 @@ export const Layout = ({ children }: LayoutProps) => {
     { path: "/malandrinerie/stocks", label: "Stocks", Icon: Package },
     { path: "/malandrinerie/recipes", label: "Recettes", Icon: Scroll },
     { path: "/malandrinerie/orders", label: "Commandes", Icon: ShoppingCart },
+    { path: "/malandrinerie/laundry", label: "Blanchisseuse", Icon: CurrencyDollar },
+    { path: "/malandrinerie/history", label: "Historique", Icon: ClockCounterClockwise },
   ];
 
   const navItems = currentSpace === 'naturopathie' ? navItemsDrogue : navItemsMalandrinerie;

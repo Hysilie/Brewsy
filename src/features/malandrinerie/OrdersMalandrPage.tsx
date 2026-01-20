@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, getDocs, addDoc, deleteDoc, doc, serverTimestamp, where } from 'firebase/firestore';
+import { collection, query, getDocs, addDoc, deleteDoc, doc, serverTimestamp, where, updateDoc } from 'firebase/firestore';
 import { db, auth } from '../../services/firebase';
 import { Button } from '../../ui/Button';
 import { ShoppingCart, Plus, Trash, Check, Knife, Pill, Backpack, Coins, Briefcase, ShieldCheck, Package, TShirt, Target, Fire, Pizza, X } from 'phosphor-react';
@@ -231,6 +231,23 @@ export const OrdersMalandrPage = () => {
       loadData();
     } catch (error) {
       console.error('Error deleting order:', error);
+    }
+  };
+
+  const validateOrder = async (orderId: string) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      await updateDoc(doc(db, 'users', user.uid, 'orders', orderId), {
+        status: 'completed',
+        completedAt: serverTimestamp(),
+      });
+
+      setViewingOrder(null);
+      loadData();
+    } catch (error) {
+      console.error('Error validating order:', error);
     }
   };
 
@@ -467,7 +484,7 @@ export const OrdersMalandrPage = () => {
                         </span>
                         <span
                           className="px-2 py-0.5 rounded-full text-xs"
-                          style={{ backgroundColor: '#FFF0E6', color: '#D4846A' }}
+                          style={{ backgroundColor: '#FFF0E6', color: '#5C4A3A' }}
                         >
                           En cours
                         </span>
@@ -655,40 +672,63 @@ export const OrdersMalandrPage = () => {
               })}
             </div>
 
-            {/* Footer with total */}
+            {/* Footer with total and actions */}
             <div
-              className="sticky bottom-0 p-4 flex items-center justify-between"
+              className="sticky bottom-0 p-4"
               style={{
                 backgroundColor: '#FDEAE6',
                 borderTop: '1px solid #F4A583'
               }}
             >
-              <div>
-                <p className="text-xs mb-1" style={{ color: '#A08876' }}>
-                  Total de la commande
-                </p>
-                <p className="text-2xl font-bold" style={{ color: '#5C4A3A' }}>
-                  {viewingOrder.totalAmount.toLocaleString()}$
-                </p>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-xs mb-1" style={{ color: '#A08876' }}>
+                    Total de la commande
+                  </p>
+                  <p className="text-2xl font-bold" style={{ color: '#5C4A3A' }}>
+                    {viewingOrder.totalAmount.toLocaleString()}$
+                  </p>
+                </div>
               </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteOrder(viewingOrder.id);
-                  setViewingOrder(null);
-                }}
-                className="px-4 py-2 rounded-soft text-sm font-medium transition-all flex items-center gap-2"
-                style={{
-                  backgroundColor: '#FFE8E0',
-                  color: '#D4846A',
-                  border: '1px solid #FFD4C4'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFD4C4'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FFE8E0'}
-              >
-                <Trash size={16} weight="bold" />
-                Supprimer
-              </button>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteOrder(viewingOrder.id);
+                    setViewingOrder(null);
+                  }}
+                  className="flex-1 px-4 py-2 rounded-soft text-sm font-medium transition-all flex items-center justify-center gap-2"
+                  style={{
+                    backgroundColor: '#FFE8E0',
+                    color: '#5C4A3A',
+                    border: '1px solid #FFD4C4'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFD4C4'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FFE8E0'}
+                >
+                  <X size={16} weight="bold" />
+                  Annuler
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    validateOrder(viewingOrder.id);
+                  }}
+                  className="flex-1 px-4 py-2 rounded-soft text-sm font-medium transition-all flex items-center justify-center gap-2"
+                  style={{
+                    backgroundColor: '#D9EDD5',
+                    color: '#6B9D66',
+                    border: '1px solid #C8E0C4'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#C8E0C4'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#D9EDD5'}
+                >
+                  <Check size={16} weight="bold" />
+                  Valider
+                </button>
+              </div>
             </div>
           </div>
         </div>

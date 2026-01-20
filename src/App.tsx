@@ -36,6 +36,8 @@ import { SetupPage } from './features/setup/SetupPage';
 import { StocksMalandrPage } from './features/malandrinerie/StocksMalandrPage';
 import { RecipesMalandrPage } from './features/malandrinerie/RecipesMalandrPage';
 import { OrdersMalandrPage } from './features/malandrinerie/OrdersMalandrPage';
+import { HistoryMalandrPage } from './features/malandrinerie/HistoryMalandrPage';
+import { LaundryMalandrPage } from './features/malandrinerie/LaundryMalandrPage';
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -131,6 +133,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <OrdersMalandrPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/malandrinerie/history"
+        element={
+          <ProtectedRoute>
+            <HistoryMalandrPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/malandrinerie/laundry"
+        element={
+          <ProtectedRoute>
+            <LaundryMalandrPage />
           </ProtectedRoute>
         }
       />

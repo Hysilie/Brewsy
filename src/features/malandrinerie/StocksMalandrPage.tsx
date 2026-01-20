@@ -266,7 +266,7 @@ export const StocksMalandrPage = () => {
                   onClick={() => updateQuantity(stock.id, -1)}
                   disabled={isUpdating || stock.quantity === 0}
                   className="p-1 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                  style={{ backgroundColor: '#FFE8E0', color: '#D4846A' }}
+                  style={{ backgroundColor: '#FFE8E0', color: '#5C4A3A' }}
                   onMouseEnter={(e) => !isUpdating && stock.quantity > 0 && (e.currentTarget.style.backgroundColor = '#FFD4C4')}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FFE8E0'}
                   title="Retirer 1"

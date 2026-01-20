@@ -309,7 +309,7 @@ export const RecipesMalandrPage = () => {
           <div className="overflow-x-auto" style={{ backgroundColor: '#FFF6F1' }}>
             <table className="w-full">
               <thead style={{ backgroundColor: '#FFF0E6', borderBottom: '1px solid #EADFD8' }}>
-                <tr className="text-xs uppercase" style={{ color: '#A0826D' }}>
+                <tr className="text-xs uppercase" style={{ color: '#A08876' }}>
                   <th className="text-left p-2 font-semibold">Recette</th>
                   <th className="text-center p-2 font-semibold w-20">Qté</th>
                   <th className="text-left p-2 font-semibold">Matériaux nécessaires</th>
@@ -387,7 +387,7 @@ export const RecipesMalandrPage = () => {
                                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
                                 style={{
                                   backgroundColor: showStatus && !status.sufficient ? '#FFE8E0' : '#F5EFE7',
-                                  color: showStatus && !status.sufficient ? '#C17B63' : '#8B7355'
+                                  color: showStatus && !status.sufficient ? '#5C7A58' : '#8B7355'
                                 }}
                               >
                                 {materialNames.get(matId) || matId}: {showStatus ? status.totalNeeded : qty}

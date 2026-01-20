@@ -19,10 +19,16 @@ import { CRATE_TYPES } from "../../constants/crates";
 import type { Stock, Price, Run, Transformation, HistoryEntry } from "../../types";
 import { useNavigate } from "react-router-dom";
 import { getTransformations } from "../../services/firestore";
+import { DashboardMalandrPage } from "../malandrinerie/DashboardMalandrPage";
 
 export const DashboardPage = () => {
   const { user } = useAuth();
   const { currentSpace } = useSpace();
+
+  // If in Malandrinerie space, use dedicated dashboard
+  if (currentSpace === 'malandrinerie') {
+    return <DashboardMalandrPage />;
+  }
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [prices, setPrices] = useState<Price[]>([]);
   const [runs, setRuns] = useState<Run[]>([]);
