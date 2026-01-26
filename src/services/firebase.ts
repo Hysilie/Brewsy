@@ -3,15 +3,15 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
 
-// Configuration Firebase depuis les variables d'environnement
+// Configuration Firebase (clés publiques, safe to commit)
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: "AIzaSyA1AWyQt-mKcZTGJ1MaPrf4IoRxxCpRl8w",
+  authDomain: "brewsy-6e24c.firebaseapp.com",
+  projectId: "brewsy-6e24c",
+  storageBucket: "brewsy-6e24c.firebasestorage.app",
+  messagingSenderId: "965602953101",
+  appId: "1:965602953101:web:50f84823c3a2db81da5fc4",
+  measurementId: "G-9T8DY7JG9C"
 };
 
 // Initialisation Firebase
