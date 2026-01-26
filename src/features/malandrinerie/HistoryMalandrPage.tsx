@@ -29,7 +29,8 @@ type CompletedOrder = {
 
 // Icon mapping function (same as RecipesMalandrPage)
 const getRecipeIcon = (recipeName: string, category: string) => {
-  const name = recipeName.toLowerCase();
+  const name = recipeName?.toLowerCase() || '';
+  const cat = category?.toLowerCase() || '';
 
   // Specific mappings
   if (name.includes('tenue de stagiaire')) return TShirt;
@@ -53,9 +54,9 @@ const getRecipeIcon = (recipeName: string, category: string) => {
   if (name.includes('mallette') || name.includes('valise')) return Briefcase;
 
   // Default by category
-  if (category.toLowerCase().includes('arme')) return Knife;
-  if (category.toLowerCase().includes('drogue')) return Pill;
-  if (category.toLowerCase().includes('argent')) return Coins;
+  if (cat.includes('arme')) return Knife;
+  if (cat.includes('drogue')) return Pill;
+  if (cat.includes('argent')) return Coins;
 
   // Default fallback
   return Package;
